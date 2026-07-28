@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import tokenGen from "../utils/tokenGen.js";
 
 export const register = async (req, res) => {
   try {
@@ -24,6 +25,15 @@ export const register = async (req, res) => {
       role,
     });
 
+    const token = tokenGen(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     return res.status(201).json({
       success: true,
       message: "User Register Successfully",
@@ -33,6 +43,7 @@ export const register = async (req, res) => {
         email: user.email,
         role: user.role,
       },
+      token,
     });
   } catch (error) {
     console.log(error);
@@ -65,7 +76,16 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid Email or Password" });
     }
 
-    return res.status(201).json({
+    const token = tokenGen(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
       success: true,
       message: "User Login Successfully",
       user: {
@@ -74,11 +94,29 @@ export const login = async (req, res) => {
         email: user.email,
         role: user.role,
       },
+      token,
     });
   } catch (error) {
     console.log(error);
     return res
       .status(500)
       .json({ message: "Login fail", error: error.message });
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "None",
+    });
+
+    res.status(200).json({ success: true, message: "Logout success" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Logout fail", error: error.message });
   }
 };
