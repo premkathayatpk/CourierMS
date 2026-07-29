@@ -81,6 +81,7 @@ const Login = () => {
           <button
             className="bg-blue-600 hover:bg-blue-700 duration-200 py-3 rounded-lg text-white font-semibold text-lg"
             disabled={loading}
+            onClick={() => navigate("/")}
           >
             {loading ? "Logging in..." : "Login"}
           </button>

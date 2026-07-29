@@ -44,7 +44,6 @@ const Register = () => {
 
       console.log("Register success:", data);
 
-      // Optional: Redirect to login after successful registration
       navigate("/");
     } catch (error) {
       setError(error.message || "Registration failed");
@@ -62,14 +61,12 @@ const Register = () => {
           <p className="text-xl text-gray-500 mt-2">Register to get started</p>
         </div>
 
-        {/* Error */}
         {error && (
           <div className="mb-5 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-600">
             {error}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div className="flex flex-col gap-2">
@@ -144,6 +141,7 @@ const Register = () => {
             type="submit"
             disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 duration-200 py-3 rounded-lg text-white font-semibold text-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+            onClick={() => navigate("/login")}
           >
             {loading ? "Creating Account..." : "Register"}
           </button>

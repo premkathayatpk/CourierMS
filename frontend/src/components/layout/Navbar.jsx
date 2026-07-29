@@ -14,12 +14,10 @@ const Navbar = () => {
   return (
     <header className="bg-black shadow-lg">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-white tracking-wide">
           CourierMS
         </Link>
 
-        {/* Navigation */}
         <nav className="flex items-center gap-3">
           <Link to="/" className={linkClass("/")}>
             Home
