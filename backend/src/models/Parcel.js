@@ -24,6 +24,20 @@ const parcelSchema = new mongoose.Schema(
         trim: true,
       },
     },
+    pickupLocation: {
+      address: {
+        type: String,
+        required: true,
+      },
+      latitude: {
+        type: Number,
+        required: true,
+      },
+      longitude: {
+        type: Number,
+        required: true,
+      },
+    },
     deliveryContact: {
       name: {
         type: String,
@@ -34,6 +48,20 @@ const parcelSchema = new mongoose.Schema(
         type: String,
         required: true,
         trim: true,
+      },
+    },
+    deliveryLocation: {
+      address: {
+        type: String,
+        required: true,
+      },
+      latitude: {
+        type: Number,
+        required: true,
+      },
+      longitude: {
+        type: Number,
+        required: true,
       },
     },
     parcelType: {
@@ -47,7 +75,7 @@ const parcelSchema = new mongoose.Schema(
         "Medicine",
         "Other",
       ],
-      default: other,
+      default: "other",
     },
     weight: {
       type: Number,
@@ -69,7 +97,7 @@ const parcelSchema = new mongoose.Schema(
         "Delivered",
         "Cancelled",
       ],
-      default: panding,
+      default: "panding",
     },
     pickedUpAt: {
       type: Date,
