@@ -93,7 +93,6 @@ const parcelSchema = new mongoose.Schema(
         "Pending",
         "Assigned",
         "Picked Up",
-        "In Transit",
         "Delivered",
         "Cancelled",
       ],
