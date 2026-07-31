@@ -75,7 +75,7 @@ const parcelSchema = new mongoose.Schema(
         "Medicine",
         "Other",
       ],
-      default: "other",
+      default: "Other",
     },
     weight: {
       type: Number,
@@ -97,7 +97,7 @@ const parcelSchema = new mongoose.Schema(
         "Delivered",
         "Cancelled",
       ],
-      default: "panding",
+      default: "Pending",
     },
     pickedUpAt: {
       type: Date,

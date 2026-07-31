@@ -61,3 +61,28 @@ export const createParcel = async (req, res) => {
     });
   }
 };
+
+//get my parcel
+
+export const getMyParcel = async (req, res) => {
+  try {
+    const parcel = await Parcel.find({
+      customer: req.user._id,
+    })
+      .populate("driver", "name phone ")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: parcel.length,
+      data: parcel,
+    });
+  } catch (error) {
+    console.error("Get My Parcel:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
