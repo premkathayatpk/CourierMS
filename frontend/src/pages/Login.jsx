@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { BaseApi } from "../main";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,6 +27,15 @@ const Login = () => {
       });
 
       const data = await res.json();
+      // dispatch({ data });
+
+      if (data.user.role === "admin") {
+        navigate("/admin/dashboard");
+      } else if (data.user.role === "driver") {
+        navigate("/driver/dashboard");
+      } else {
+        navigate("/customer/dashboard");
+      }
 
       if (!res.ok) {
         console.error(data.message || "Login fail");
@@ -81,7 +92,6 @@ const Login = () => {
           <button
             className="bg-blue-600 hover:bg-blue-700 duration-200 py-3 rounded-lg text-white font-semibold text-lg"
             disabled={loading}
-            onClick={() => navigate("/")}
           >
             {loading ? "Logging in..." : "Login"}
           </button>

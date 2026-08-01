@@ -1,12 +1,9 @@
-import React from "react";
-import Navbar from "./components/layout/Navbar";
-import AppRouter from "./routes/AppRouter";
+import MainLayout from "./layouts/MainLayout";
 
 const App = () => {
   return (
     <div>
-      <Navbar />
-      <AppRouter />
+      <MainLayout />
     </div>
   );
 };
