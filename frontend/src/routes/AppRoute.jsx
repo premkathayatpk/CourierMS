@@ -8,26 +8,24 @@ import CreateParcel from "../pages/customer/CreateParcel";
 import Parcel from "../pages/customer/Parcel";
 import ParcelDetails from "../pages/customer/ParcelDetails";
 import TrackParcel from "../pages/customer/TrackParcel";
+import CustomerRoute from "./CustomerRoute";
+import CustomerLayout from "../layouts/CustomerLayout";
 
 const AppRouter = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />}>
-        Home
-      </Route>
-      <Route path="/login" element={<Login />}>
-        Login
-      </Route>
-      <Route path="/register" element={<Register />}>
-        Register
-      </Route>
+      <Route path="/" element={<Home />}></Route>
+      <Route path="/login" element={<Login />}></Route>
+      <Route path="/register" element={<Register />}></Route>
 
-      <Route >
-        <Route path="/customer" element={<Dashboard />} />
-        <Route path="/createParcel" element={<CreateParcel />} />
-        <Route path="/parcel" element={<Parcel />} />
-        <Route path="/parcelDetail" element={<ParcelDetails />} />
-        <Route path="/trackParcel" element={<TrackParcel />} />
+      <Route element={<CustomerRoute />}>
+        <Route path="/customer" element={<CustomerLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="createParcel" element={<CreateParcel />} />
+          <Route path="parcel" element={<Parcel />} />
+          <Route path="parcel/:id" element={<ParcelDetails />} />
+          <Route path="track/:id" element={<TrackParcel />} />
+        </Route>
       </Route>
     </Routes>
   );

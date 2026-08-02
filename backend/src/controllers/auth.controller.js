@@ -4,7 +4,8 @@ import tokenGen from "../utils/tokenGen.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, phone, role } = req.body;
+    const { name, email, password, phone, role, vehicleType, licenseNumber } =
+      req.body;
 
     if (!name || !email || !password || !phone) {
       return res.status(400).json({ message: "All fields are required" });
@@ -17,31 +18,41 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+
+    const userData = {
       name,
       email: normalizedEmail,
       password: hashedPassword,
       phone,
-      role,
-    });
+      role: role || "customer",
+    };
+
+    if (role === "driver") {
+      userData.vehicleType = vehicleType || "Bike";
+      userData.licenseNumber = licenseNumber;
+    }
+
+    const user = await User.create(userData);
 
     const token = tokenGen(user);
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(201).json({
       success: true,
-      message: "User Register Successfully",
+      message: "User registered successfully.",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
+        vehicleType: user.vehicleType,
       },
       token,
     });
@@ -67,7 +78,10 @@ export const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid Email or Password" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email or password.",
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -81,18 +95,20 @@ export const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
       success: true,
-      message: "User Login Successfully",
+      message: "User logged in successfully.",
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
+        vehicleType: user.vehicleType,
       },
       token,
     });
@@ -109,7 +125,7 @@ export const logout = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "lax",
     });
 
     res.status(200).json({ success: true, message: "Logout success" });

@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      required: [true, "Name is required."],
+      trim: true,
     },
     email: {
       type: String,
@@ -18,6 +21,7 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
+      required: true,
       trim: true,
     },
     role: {
@@ -25,6 +29,30 @@ const userSchema = new mongoose.Schema(
       enum: ["customer", "driver", "admin"],
       default: "customer",
     },
+    vehicleType: {
+      type: String,
+      enum: ["Bike", "Car", "Van", "Truck"],
+      default: "Bike",
+    },
+    licenseNumber: {
+      type: String,
+      trim: true,
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
+    // Real-time location tracking for drivers
+    currentLocation: {
+      latitude: {
+        type: Number,
+        default: null,
+      },
+      longitude: {
+        type: Number,
+        default: null,
+      },
+    }, 
   },
   {
     timestamps: true,

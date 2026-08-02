@@ -1,7 +1,8 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { BaseApi } from "../main";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/slice/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,7 +10,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,21 +28,31 @@ const Login = () => {
       });
 
       const data = await res.json();
-      // dispatch({ data });
-
-      if (data.user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (data.user.role === "driver") {
-        navigate("/driver/dashboard");
-      } else {
-        navigate("/customer/dashboard");
-      }
 
       if (!res.ok) {
-        console.error(data.message || "Login fail");
+        setError(data.message || "Login failed");
+        return;
       }
 
-      console.log("Login success:", data);
+      dispatch(loginSuccess(data.user));
+      console.log(data.user);
+
+      switch (data.user.role) {
+        case "admin":
+          navigate("/admin/dashboard");
+          break;
+
+        case "driver":
+          navigate("/driver/dashboard");
+          break;
+
+        case "customer":
+          navigate("/customer");
+          break;
+
+        default:
+          navigate("/");
+      }
     } catch (error) {
       setError(error.message || "Login fail");
     } finally {
@@ -55,6 +66,13 @@ const Login = () => {
           <h1 className="text-4xl font-bold">Welcome Back</h1>
           <p className="text-xl text-gray-500  ">Sign in to your account</p>
         </div>
+
+        {error && (
+          <div className="mb-5 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-600">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-3 ">
           <div className=" flex flex-col  w-[100%] gap-2">
             <label className="text-xl" htmlFor="email">
