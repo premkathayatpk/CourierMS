@@ -3,6 +3,7 @@ import authRouter from "./routes/auth.route.js";
 import cookieParse from "cookie-parser";
 import cors from "cors";
 import parcelRouter from "./routes/parcel.route.js";
+import userRouter from "./routes/user.route.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cookieParse());
 
 //APIs
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 app.use("/api/parcel", parcelRouter);
 
 export default app;

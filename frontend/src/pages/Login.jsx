@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BaseApi } from "../main";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../redux/slice/authSlice";
+import { setUser } from "../redux/slice/userSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,20 +34,20 @@ const Login = () => {
         return;
       }
 
-      dispatch(loginSuccess(data.user));
-      console.log(data.user);
+      dispatch(setUser(data.user));
+      // console.log(data.user);
 
       switch (data.user.role) {
         case "admin":
-          navigate("/admin/dashboard");
+          navigate("/admin/");
           break;
 
         case "driver":
-          navigate("/driver/dashboard");
+          navigate("/driver/");
           break;
 
         case "customer":
-          navigate("/customer");
+          navigate("/customer/");
           break;
 
         default:

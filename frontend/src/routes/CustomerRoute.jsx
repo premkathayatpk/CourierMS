@@ -1,22 +1,24 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 const CustomerRoute = () => {
-  const { user } = useSelector((state) => state.auth);
-  const navigate = useNavigate();
+  const { user, loading } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    if (currentUser && currentUser.role === "customer") {
-      return navigate("/customer", { replace: true });
-    }
-  }, [currentUser, navigate]);
-  if (!currentUser) {
-    return <div>Please log in to access this page.</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
-  if (currentUser.role !== "customer") {
-    return <div>Access Denied. Customers only.</div>;
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== "customer") {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

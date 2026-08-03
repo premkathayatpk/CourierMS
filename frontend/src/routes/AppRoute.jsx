@@ -22,7 +22,7 @@ const AppRouter = () => {
         <Route path="/customer" element={<CustomerLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="createParcel" element={<CreateParcel />} />
-          <Route path="parcel" element={<Parcel />} />
+          <Route path="parcels" element={<Parcel />} />
           <Route path="parcel/:id" element={<ParcelDetails />} />
           <Route path="track/:id" element={<TrackParcel />} />
         </Route>
