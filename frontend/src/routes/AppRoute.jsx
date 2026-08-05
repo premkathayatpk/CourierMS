@@ -10,6 +10,7 @@ import ParcelDetails from "../pages/customer/ParcelDetails";
 import TrackParcel from "../pages/customer/TrackParcel";
 import CustomerRoute from "./CustomerRoute";
 import CustomerLayout from "../layouts/CustomerLayout";
+import Profile from "../components/Profile";
 
 const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ const AppRouter = () => {
           <Route path="parcels" element={<Parcel />} />
           <Route path="parcel/:id" element={<ParcelDetails />} />
           <Route path="track/:id" element={<TrackParcel />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Route>
     </Routes>

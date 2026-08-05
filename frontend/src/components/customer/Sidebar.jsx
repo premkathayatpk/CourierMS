@@ -7,6 +7,7 @@ const Sidebar = () => {
       <Link to="/customer">Dashboard</Link>
       <Link to="/customer/parcels">Parcels</Link>
       <Link to="/customer/parcel/:id">Parcel detail</Link>
+      <Link to="/customer/profile">Profile</Link>
     </div>
   );
 };
