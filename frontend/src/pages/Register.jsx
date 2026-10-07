@@ -1,50 +1,102 @@
-import React, { useState } from "react";
-import { BaseApi } from "../main";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Bike, Car, Package, Truck, Caravan } from "lucide-react";
+import { setUser } from "../redux/slice/userSlice";
+import { apiFetch } from "../services/api";
+import {
+  AuthShell,
+  Field,
+  FormError,
+  PasswordInput,
+} from "../components/auth/AuthShell";
+
+const ROLES = [
+  {
+    value: "customer",
+    label: "Customer",
+    caption: "Send & track parcels",
+    icon: Package,
+  },
+  {
+    value: "driver",
+    label: "Driver",
+    caption: "Deliver & earn",
+    icon: Truck,
+  },
+];
+
+const VEHICLES = [
+  { value: "Bike", icon: Bike },
+  { value: "Car", icon: Car },
+  { value: "Van", icon: Caravan },
+  { value: "Truck", icon: Truck },
+];
+
+const PANEL_COPY = {
+  customer: {
+    eyebrow: "For customers",
+    title: "Book a pickup in minutes, follow it to the door.",
+    points: [
+      "Instant pricing based on weight and parcel type",
+      "Live map tracking with courier ETA",
+      "Shareable tracking number for your recipient",
+    ],
+  },
+  driver: {
+    eyebrow: "For drivers",
+    title: "Pick up jobs near you and get on the road.",
+    points: [
+      "Go online or offline whenever you like",
+      "Turn-by-turn route to pickup and drop-off",
+      "One-tap status updates for every delivery",
+    ],
+  },
+};
 
 const Register = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("customer");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [role, setRole] = useState("");
+  const [password, setPassword] = useState("");
+  const [vehicleType, setVehicleType] = useState("Bike");
+  const [licenseNumber, setLicenseNumber] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const isDriver = role === "driver";
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await fetch(`${BaseApi}/auth/register`, {
+      const data = await apiFetch("/auth/register", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           name,
           email,
           password,
           phone,
           role,
+          ...(isDriver ? { vehicleType, licenseNumber } : {}),
         }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
-      console.log("Register success:", data);
-
-      navigate("/");
+      dispatch(setUser(data.user));
+      navigate(data.user.role === "driver" ? "/driver" : "/customer");
     } catch (error) {
       setError(error.message || "Registration failed");
     } finally {
@@ -53,112 +105,173 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md md:max-w-lg lg:max-w-xl bg-white rounded-2xl shadow-xl p-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold">Create Account</h1>
-          <p className="text-xl text-gray-500 mt-2">Register to get started</p>
-        </div>
+    <AuthShell {...PANEL_COPY[role]}>
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          Create your account
+        </h1>
+        <p className="mt-2 text-sm text-ink-500">
+          Choose how you&apos;ll use CourierMS. You can&apos;t switch later.
+        </p>
+      </div>
 
-        {error && (
-          <div className="mb-5 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-600">
-            {error}
-          </div>
-        )}
+      {/* Role toggle */}
+      <div
+        role="radiogroup"
+        aria-label="Account type"
+        className="mb-6 grid grid-cols-2 gap-1 rounded-xl bg-ink-100 p-1"
+      >
+        {ROLES.map(({ value, label, caption, icon: Icon }) => {
+          const active = role === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => setRole(value)}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition ${
+                active
+                  ? "bg-white shadow-card ring-1 ring-ink-200"
+                  : "text-ink-500 hover:bg-white/60 hover:text-ink-800"
+              }`}
+            >
+              <span
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition ${
+                  active ? "bg-brand-600 text-white" : "bg-ink-200 text-ink-500"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
+              <span className="min-w-0">
+                <span
+                  className={`block text-sm font-bold ${active ? "text-ink-900" : ""}`}
+                >
+                  {label}
+                </span>
+                <span className="block text-xs leading-snug text-ink-500">
+                  {caption}
+                </span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
-          <div className="flex flex-col gap-2">
-            <label className="text-lg font-medium">Full Name</label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <FormError message={error} />
+
+        <Field id="register-name" label="Full name">
+          <input
+            id="register-name"
+            autoComplete="name"
+            type="text"
+            placeholder="e.g. Sita Sharma"
+            className="field-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </Field>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field id="register-email" label="Email">
             <input
-              type="text"
-              placeholder="Enter your full name"
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div className="flex flex-col gap-2">
-            <label className="text-lg font-medium">Email</label>
-            <input
+              id="register-email"
+              autoComplete="email"
               type="email"
-              placeholder="Enter your email"
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              placeholder="you@example.com"
+              className="field-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </div>
+          </Field>
 
-          {/* Password */}
-          <div className="flex flex-col gap-2">
-            <label className="text-lg font-medium">Password</label>
+          <Field id="register-phone" label="Phone number">
             <input
-              type="password"
-              placeholder="Enter your password"
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="flex flex-col gap-2">
-            <label className="text-lg font-medium">Phone Number</label>
-            <input
+              id="register-phone"
+              autoComplete="tel"
               type="tel"
-              placeholder="Enter your phone number"
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+              placeholder="98XXXXXXXX"
+              className="field-input"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required
             />
-          </div>
+          </Field>
+        </div>
 
-          {/* Role */}
-          <div className="flex flex-col gap-2">
-            <label className="text-lg font-medium">Role</label>
-            <select
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="customer">Customer</option>
-              <option value="driver">Driver</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+        <Field id="register-password" label="Password" hint="At least 6 characters.">
+          <PasswordInput
+            id="register-password"
+            autoComplete="new-password"
+            placeholder="Create a password"
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </Field>
 
-          {/* Register Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 duration-200 py-3 rounded-lg text-white font-semibold text-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-            onClick={() => navigate("/login")}
-          >
-            {loading ? "Creating Account..." : "Register"}
-          </button>
+        {isDriver && (
+          <fieldset className="space-y-4 rounded-xl border border-brand-200 bg-brand-50/60 p-4">
+            <legend className="px-1 text-xs font-bold uppercase tracking-wider text-brand-700">
+              Vehicle details
+            </legend>
 
-          {/* Login Link */}
-          <p className="text-center text-gray-600">
-            Already have an account?{" "}
-            <span
-              className="text-blue-600 font-semibold hover:underline cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
-              Login
-            </span>
-          </p>
-        </form>
-      </div>
-    </div>
+            <div>
+              <span className="field-label">Vehicle type</span>
+              <div className="mt-1.5 grid grid-cols-4 gap-2">
+                {VEHICLES.map(({ value, icon: Icon }) => {
+                  const active = vehicleType === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => setVehicleType(value)}
+                      className={`flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 text-xs font-semibold transition ${
+                        active
+                          ? "border-brand-500 bg-white text-brand-700 ring-2 ring-brand-500/15"
+                          : "border-ink-200 bg-white text-ink-600 hover:border-ink-300"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      {value}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Field id="register-license" label="License number">
+              <input
+                id="register-license"
+                type="text"
+                placeholder="e.g. BA-2-PA-8899"
+                className="field-input"
+                value={licenseNumber}
+                onChange={(e) => setLicenseNumber(e.target.value)}
+              />
+            </Field>
+          </fieldset>
+        )}
+
+        <button type="submit" disabled={loading} className="btn-primary w-full py-3">
+          {loading
+            ? "Creating account..."
+            : `Create ${isDriver ? "driver" : "customer"} account`}
+        </button>
+
+        <p className="text-center text-sm text-ink-500">
+          Already have an account?{" "}
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline">
+            Log in
+          </Link>
+        </p>
+      </form>
+    </AuthShell>
   );
 };
 

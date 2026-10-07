@@ -6,7 +6,10 @@ const connect = async () => {
 
     console.log("DB connected!");
   } catch (error) {
-    console.log(error);
+    // The API is useless without a database, so fail fast instead of
+    // serving requests that will all error out.
+    console.error("DB connection failed:", error.message);
+    process.exit(1);
   }
 };
 export default connect;

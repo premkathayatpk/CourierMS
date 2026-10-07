@@ -1,8 +1,21 @@
-import React, { useState } from "react";
-import { BaseApi } from "../main";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/slice/userSlice";
+import { apiFetch } from "../services/api";
+import {
+  AuthShell,
+  Field,
+  FormError,
+  PasswordInput,
+} from "../components/auth/AuthShell";
+
+// Seeded demo accounts (see backend/src/seed.js). Only offered in dev builds.
+const DEMO_ACCOUNTS = [
+  { label: "Customer", email: "customer@courierms.com" },
+  { label: "Driver", email: "driver1@courierms.com" },
+  { label: "Admin", email: "admin@courierms.com" },
+];
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -18,113 +31,105 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BaseApi}/auth/login`, {
+      const data = await apiFetch("/auth/login", {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Login failed");
-        return;
-      }
-
       dispatch(setUser(data.user));
-      // console.log(data.user);
-
-      switch (data.user.role) {
-        case "admin":
-          navigate("/admin/");
-          break;
-
-        case "driver":
-          navigate("/driver/");
-          break;
-
-        case "customer":
-          navigate("/customer/");
-          break;
-
-        default:
-          navigate("/");
-      }
+      const home = { admin: "/admin", driver: "/driver", customer: "/customer" };
+      navigate(home[data.user.role] || "/");
     } catch (error) {
-      setError(error.message || "Login fail");
+      setError(error.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const fillDemo = (demoEmail) => {
+    setEmail(demoEmail);
+    setPassword("password123");
+    setError("");
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex items-center justify-center px-4">
-      <div className="w-full max-w-md md:max-w-lg lg:max-w-xl bg-white rounded-2xl flex flex-col px-5 py-8 gap-5 shadow-xl ">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold">Welcome Back</h1>
-          <p className="text-xl text-gray-500  ">Sign in to your account</p>
-        </div>
-
-        {error && (
-          <div className="mb-5 rounded-lg border border-red-300 bg-red-100 px-4 py-3 text-red-600">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3 ">
-          <div className=" flex flex-col  w-[100%] gap-2">
-            <label className="text-xl" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              type="email"
-              placeholder="Enter your email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              required
-            />
-          </div>
-          <div className=" flex flex-col  w-[100%] gap-2">
-            <label className="text-xl" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="border border-gray-300 rounded-lg px-4 py-3 text-lg outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-              type="password"
-              placeholder="Enter your password"
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-              required
-            />
-          </div>
-          <div>
-            <p className="text-blue-700 flex justify-end cursor-pointer">
-              Forget Password?
-            </p>
-          </div>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 duration-200 py-3 rounded-lg text-white font-semibold text-lg"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-          <p className="text-center text-gray-600">
-            Don't have an account?{" "}
-            <span
-              className="text-blue-600 font-semibold hover:underline cursor-pointer"
-              onClick={() => navigate("/register")}
-            >
-              Register
-            </span>
-          </p>
-        </form>
+    <AuthShell
+      eyebrow="Welcome back"
+      title="Every parcel, every courier, one live map."
+      points={[
+        "Customers book and follow deliveries in real time",
+        "Drivers manage jobs and share live GPS",
+        "Admins dispatch the whole fleet from one place",
+      ]}
+    >
+      <div className="mb-8">
+        <h1 className="text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+          Log in
+        </h1>
+        <p className="mt-2 text-sm text-ink-500">
+          Sign in to your CourierMS account.
+        </p>
       </div>
-    </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <FormError message={error} />
+
+        <Field id="email" label="Email">
+          <input
+            className="field-input"
+            type="email"
+            id="email"
+            autoComplete="email"
+            value={email}
+            placeholder="you@example.com"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </Field>
+
+        <Field id="password" label="Password">
+          <PasswordInput
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            placeholder="Your password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </Field>
+
+        <button type="submit" className="btn-primary w-full py-3" disabled={loading}>
+          {loading ? "Logging in..." : "Log in"}
+        </button>
+
+        <p className="text-center text-sm text-ink-500">
+          New to CourierMS?{" "}
+          <Link to="/register" className="font-semibold text-brand-700 hover:underline">
+            Create an account
+          </Link>
+        </p>
+      </form>
+
+      {import.meta.env.DEV && (
+        <div className="mt-8 rounded-xl border border-dashed border-ink-300 p-4">
+          <p className="text-xs font-bold uppercase tracking-wider text-ink-500">
+            Demo accounts
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {DEMO_ACCOUNTS.map((acc) => (
+              <button
+                key={acc.email}
+                type="button"
+                onClick={() => fillDemo(acc.email)}
+                className="rounded-full border border-ink-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+              >
+                {acc.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </AuthShell>
   );
 };
 

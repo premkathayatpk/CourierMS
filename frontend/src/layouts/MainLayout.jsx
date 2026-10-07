@@ -1,10 +1,13 @@
 import Navbar from "../components/common/Navbar";
 import AppRoute from "../routes/AppRoute";
+
 const MainLayout = () => {
   return (
-    <div>
+    <div className="min-h-screen flex flex-col bg-ink-50">
       <Navbar />
-      <AppRoute />
+      <div className="flex-1">
+        <AppRoute />
+      </div>
     </div>
   );
 };

@@ -1,1 +1,224 @@
 @import "tailwindcss";
+
+/*
+ * CourierMS design tokens: simple, light blue theme
+ * ------------------------------------------------------------------
+ * brand  – clear blue. Use 600 for filled buttons (white text passes
+ *          WCAG AA), 500 for focus rings/borders, 50–100 for light tints.
+ * ink    – cool slate neutrals with a faint blue tint. 900 for headings,
+ *          600 body, 500 secondary, 400 icons/placeholders, 200 borders,
+ *          50–100 page and panel backgrounds.
+ * accent – light sky blue for highlights and selection.
+ * Status colours (violet, amber, emerald, rose) come from Tailwind's
+ * defaults; see src/utils/status.js.
+ */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+  --color-brand-950: #172554;
+
+  --color-ink-50: #f6f9fc;
+  --color-ink-100: #eef3f8;
+  --color-ink-200: #e1e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #8492a6;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #334155;
+  --color-ink-800: #1e293b;
+  --color-ink-900: #0f172a;
+  --color-ink-950: #020617;
+
+  --color-accent-50: #f0f9ff;
+  --color-accent-100: #e0f2fe;
+  --color-accent-200: #bae6fd;
+  --color-accent-300: #7dd3fc;
+  --color-accent-400: #38bdf8;
+  --color-accent-500: #0ea5e9;
+  --color-accent-600: #0284c7;
+  --color-accent-700: #0369a1;
+  --color-accent-800: #075985;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.06);
+  --shadow-lift: 0 10px 30px -12px rgb(15 23 42 / 0.18);
+}
+
+/* Base styles live in the base layer so Tailwind utilities can override them */
+@layer base {
+  :root {
+    color: var(--color-ink-900);
+    background: var(--color-ink-50);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--color-ink-50);
+    color: var(--color-ink-900);
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-ink-400);
+  }
+
+  ::selection {
+    color: var(--color-ink-900);
+    background: var(--color-accent-300);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 3px;
+  }
+
+  /* Slim, theme-coloured scrollbars for sidebars and tables */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-300) transparent;
+  }
+}
+
+/* ---------- Reusable component classes ---------- */
+@utility card {
+  @apply rounded-xl border border-ink-200 bg-white shadow-card;
+}
+
+@utility field-label {
+  @apply text-sm font-semibold text-ink-900;
+}
+
+@utility field-input {
+  @apply w-full rounded-lg border border-ink-300 bg-white px-3 py-2.5 text-sm text-ink-900 outline-none transition placeholder:text-ink-400 hover:border-ink-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition focus-visible:outline-2 disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-brand-600 text-white shadow-sm shadow-brand-600/20 hover:bg-brand-700 active:translate-y-px;
+}
+
+@utility btn-secondary {
+  @apply btn border border-ink-300 bg-white text-ink-800 hover:border-ink-400 hover:bg-ink-50;
+}
+
+/* ---------- Map (Leaflet) ---------- */
+@layer base {
+  .leaflet-container {
+    font-family: var(--font-sans);
+  }
+}
+
+/* Calm the busy OSM palette so routes and pins stand out */
+.leaflet-tile-pane {
+  filter: saturate(0.65) contrast(0.95);
+}
+
+.map-pin {
+  position: relative;
+  display: flex;
+  height: 36px;
+  width: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #fff;
+  border-radius: 9999px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 0.3);
+}
+.map-pin svg {
+  height: 17px;
+  width: 17px;
+}
+.map-pin--pickup {
+  background: #059669;
+}
+.map-pin--delivery {
+  background: #e11d48;
+}
+.map-pin--driver {
+  background: var(--color-brand-600);
+}
+.map-pin--offline {
+  background: var(--color-ink-400);
+}
+.map-pin--done {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+/* Pulsing ring around the live courier */
+.map-pin--live::before {
+  content: "";
+  position: absolute;
+  inset: -9px;
+  border-radius: 9999px;
+  background: rgb(59 130 246 / 0.35);
+  animation: map-pulse 1.8s ease-out infinite;
+  z-index: -1;
+}
+@keyframes map-pulse {
+  from {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.map-popup {
+  min-width: 140px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-ink-700);
+}
+.map-popup strong {
+  display: block;
+  color: var(--color-ink-900);
+}
+.map-popup p {
+  margin: 2px 0 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

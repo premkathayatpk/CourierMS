@@ -1,41 +1,37 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BaseApi } from "../main";
-import { setLoading, setUser } from "../redux/slice/userSlice";
+import { apiFetch } from "../services/api";
+import { clearUser, setUser } from "../redux/slice/userSlice";
 
+// Restores the session from the auth cookie once, when the app boots.
+// Login/Register/Logout update the store themselves afterwards.
 const useCurrentUser = () => {
-  const { user } = useSelector((state) => state.user);
+  const { user, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (user) return;
+    let cancelled = false;
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`${BaseApi}/user/me`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          dispatch(clearUser());
-          return;
+        const data = await apiFetch("/auth/session");
+        if (!cancelled) {
+          dispatch(data.success && data.user ? setUser(data.user) : clearUser());
         }
-
-        const data = await res.json();
-        // console.log(data.user);
-
-        dispatch(setUser(data.user));
-      } catch (error) {
-        console.log("Error fertching current user", error);
-      } finally {
-        dispatch(setLoading(false));
+      } catch {
+        // Not logged in or session expired
+        if (!cancelled) dispatch(clearUser());
       }
     };
 
     fetchUser();
-  }, [dispatch, user]);
-  return { user };
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch]);
+
+  return { user, loading };
 };
 
 export default useCurrentUser;

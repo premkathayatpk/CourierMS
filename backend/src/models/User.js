@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { type } from "os";
 
 const userSchema = new mongoose.Schema(
   {
@@ -42,6 +41,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // Profile photo, stored locally: "/uploads/avatars/<file>"
+    avatar: {
+      type: String,
+      default: "",
+    },
     // Real-time location tracking for drivers
     currentLocation: {
       latitude: {
@@ -52,7 +56,12 @@ const userSchema = new mongoose.Schema(
         type: Number,
         default: null,
       },
-    }, 
+    },
+    // When currentLocation was last reported; stale fixes are ignored by auto-assign
+    locationUpdatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

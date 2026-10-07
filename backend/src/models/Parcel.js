@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const parcelSchema = new mongoose.Schema(
   {
+    trackingNumber: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -87,12 +93,25 @@ const parcelSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    // Road distance (A*) and how the price was built, saved at booking time
+    distanceKm: {
+      type: Number,
+      default: null,
+    },
+    priceBreakdown: {
+      base: Number,
+      distance: Number,
+      weight: Number,
+      surcharge: Number,
+      minimumFareAdjustment: Number,
+    },
     status: {
       type: String,
       enum: [
         "Pending",
         "Assigned",
         "Picked Up",
+        "In Transit",
         "Delivered",
         "Cancelled",
       ],
@@ -109,6 +128,15 @@ const parcelSchema = new mongoose.Schema(
       type: String,
       default: "",
       trim: true,
+    },
+    // Images stored locally under backend/uploads (relative URL paths)
+    photo: {
+      type: String, // package photo added by the customer while Pending
+      default: "",
+    },
+    deliveryPhoto: {
+      type: String, // proof of delivery taken by the driver
+      default: "",
     },
   },
   {
