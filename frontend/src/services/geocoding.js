@@ -1,6 +1,4 @@
-// Address search & reverse geocoding via our backend (/api/geo/*), which
-// restricts results to Kathmandu, Lalitpur and Bhaktapur, ranks them and
-// caches Nominatim lookups. See backend/src/services/addressResolution.js.
+
 import { apiFetch } from "./api";
 
 /** Places matching `query` inside the service area: [{ name, lat, lng }] */

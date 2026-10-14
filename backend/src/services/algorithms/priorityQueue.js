@@ -1,13 +1,4 @@
-/**
- * Binary min-heap priority queue (supporting data structure for A*).
- *
- * Stores integer items with numeric priorities in parallel typed-ish arrays.
- * push / pop: O(log n), peek: O(1).
- *
- * A* uses "lazy deletion": when a node's cost improves it is simply pushed
- * again, and stale entries are skipped when popped. That avoids an expensive
- * decrease-key operation.
- */
+
 export class MinHeap {
   constructor() {
     this.items = [];

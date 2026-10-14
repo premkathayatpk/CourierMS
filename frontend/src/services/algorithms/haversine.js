@@ -1,11 +1,4 @@
-/**
- * Haversine formula — straight-line ("as the crow flies") distance in metres
- * between two {lat, lng} points on Earth. O(1).
- *
- * Used by: deciding when the driver has moved far enough to request a new
- * route, and straight-line fallback estimates. (Same formula as the backend's
- * src/services/haversine.js.)
- */
+
 const R = 6371000;
 const toRad = (deg) => (deg * Math.PI) / 180;
 

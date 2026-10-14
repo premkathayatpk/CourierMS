@@ -1,19 +1,7 @@
 import { haversineMeters } from "./haversine.js";
 import { FLEET } from "../../config/fleet.js";
 
-/**
- * Auto-assignment: pick the best online driver for a parcel's pickup.
- *
- *   1. Drop drivers whose vehicle can't carry the weight, whose GPS fix is
- *      missing or stale (app closed), or who are already at maxActiveJobs.
- *   2. Shortlist the shortlistSize closest by straight-line distance (cheap),
- *      so A* only runs a handful of times per parcel.
- *   3. Score = road travel time to pickup (A*) + jobPenaltySeconds per active job.
- *      If no road route exists, fall back to haversine × 1.3 at 25 km/h.
- *   4. Lowest score wins; ties go to the driver with fewer jobs.
- *
- * Pure function: the router and clock are injected so it can be unit-tested.
- */
+
 export const MAX_ACTIVE_JOBS = FLEET.maxActiveJobs;
 
 const FALLBACK_DETOUR = 1.3;

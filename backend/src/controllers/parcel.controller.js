@@ -10,9 +10,7 @@ const ACTIVE_STATUSES = ["Assigned", "Picked Up", "In Transit"];
 // Customers may still cancel / change the package photo in these states
 const BEFORE_PICKUP = ["Pending", "Assigned"];
 
-// Status changes per role. Drivers step forward one stage at a time; admins can
-// do the same and also cancel anything unfinished. Delivered/Cancelled are final.
-// (Pending → Assigned happens through the assign endpoint, not here.)
+
 const STATUS_TRANSITIONS = {
   driver: {
     Assigned: ["Picked Up"],

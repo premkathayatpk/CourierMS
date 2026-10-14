@@ -1,20 +1,8 @@
-/**
- * Haversine formula — great-circle distance between two points on Earth.
- *
- *   a = sin²(Δφ/2) + cos φ1 · cos φ2 · sin²(Δλ/2)
- *   d = 2R · asin(√a)
- *
- * Accurate to ~0.5% (Earth isn't a perfect sphere), which is plenty for a city.
- * Time: O(1).
- *
- * Used by: A* heuristic, nearest-road snapping, geocoding de-duplication,
- * distance fallback for pricing.
- */
+
 export const EARTH_RADIUS_M = 6371000;
 
 const toRad = (deg) => (deg * Math.PI) / 180;
 
-/** Distance in metres between (lat1, lng1) and (lat2, lng2). */
 export const haversineMeters = (lat1, lng1, lat2, lng2) => {
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);

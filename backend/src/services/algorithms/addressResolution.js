@@ -1,22 +1,4 @@
-/**
- * Geocoding & address resolution — turning what a user types into a
- * ranked list of real places (and coordinates back into an address).
- *
- * Steps for a search:
- *   1. normalizeAddress   lower-case, strip punctuation, expand common
- *                         abbreviations ("rd" → "road", "ktm" → "kathmandu")
- *   2. scorePlaceMatch    score known places: exact > prefix > all words
- *                         present > word prefixes > substring
- *   3. external geocoder  (Nominatim, bounded to the valley) for anything the
- *                         local list doesn't know
- *   4. rankAndDedupe      drop results outside the service area, merge results
- *                         closer than ~100 m (haversine), sort by score
- *
- * Reverse geocoding: cached Nominatim lookup, falling back to the nearest
- * known place ("Near Patan Durbar Square") or raw coordinates.
- *
- * All functions here are pure; network calls live in services/geocoder.js.
- */
+
 import { distanceBetween } from "./haversine.js";
 
 const ABBREVIATIONS = {
@@ -41,14 +23,7 @@ export const normalizeAddress = (text = "") =>
     .map((word) => ABBREVIATIONS[word] || word)
     .join(" ");
 
-/**
- * Score how well a known place name matches a normalized query (0 = no match).
- *   100 exact name
- *    85 name starts with the query
- *    70 every query word appears in the name
- *    55 every query word is a prefix of some name word
- *    40 query appears anywhere in the name
- */
+
 export const scorePlaceMatch = (query, placeName) => {
   const q = normalizeAddress(query);
   const name = normalizeAddress(placeName);
@@ -64,12 +39,7 @@ export const scorePlaceMatch = (query, placeName) => {
   return 0;
 };
 
-/**
- * Merge candidate lists into a single ranked list.
- *   candidates: [{ name, lat, lng, score, source }]
- *   isInside(lat, lng): service-area check (geofence)
- * Higher score wins; among near-duplicates (< dedupeMeters apart) the best is kept.
- */
+
 export const rankAndDedupe = (candidates, { isInside = () => true, dedupeMeters = 100, limit = 8 } = {}) => {
   const sorted = candidates
     .filter((c) => Number.isFinite(c.lat) && Number.isFinite(c.lng) && isInside(c.lat, c.lng))
@@ -84,10 +54,7 @@ export const rankAndDedupe = (candidates, { isInside = () => true, dedupeMeters 
   return kept;
 };
 
-/**
- * Nearest known place to a point (linear scan; the place list is small).
- * Returns { place, meters } or null.
- */
+
 export const nearestPlace = (lat, lng, places) => {
   let best = null;
   for (const place of places) {

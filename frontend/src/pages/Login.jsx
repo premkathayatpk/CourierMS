@@ -37,7 +37,11 @@ const Login = () => {
       });
 
       dispatch(setUser(data.user));
-      const home = { admin: "/admin", driver: "/driver", customer: "/customer" };
+      const home = {
+        admin: "/admin",
+        driver: "/driver",
+        customer: "/customer",
+      };
       navigate(home[data.user.role] || "/");
     } catch (error) {
       setError(error.message || "Login failed");
@@ -98,19 +102,26 @@ const Login = () => {
           />
         </Field>
 
-        <button type="submit" className="btn-primary w-full py-3" disabled={loading}>
+        <button
+          type="submit"
+          className="btn-primary w-full py-3"
+          disabled={loading}
+        >
           {loading ? "Logging in..." : "Log in"}
         </button>
 
         <p className="text-center text-sm text-ink-500">
           New to CourierMS?{" "}
-          <Link to="/register" className="font-semibold text-brand-700 hover:underline">
+          <Link
+            to="/register"
+            className="font-semibold text-brand-700 hover:underline"
+          >
             Create an account
           </Link>
         </p>
       </form>
 
-      {import.meta.env.DEV && (
+      {/* {import.meta.env.DEV && (
         <div className="mt-8 rounded-xl border border-dashed border-ink-300 p-4">
           <p className="text-xs font-bold uppercase tracking-wider text-ink-500">
             Demo accounts
@@ -128,7 +139,7 @@ const Login = () => {
             ))}
           </div>
         </div>
-      )}
+      )} */}
     </AuthShell>
   );
 };

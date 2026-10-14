@@ -5,14 +5,6 @@ import { aStar } from "./algorithms/aStar.js";
 import { haversineMeters } from "./algorithms/haversine.js";
 import { SpatialGrid } from "./algorithms/spatialGrid.js";
 
-// Road routing for the Kathmandu Valley using A* over the OpenStreetMap road
-// graph in backend/data/road-graph.json (built by `npm run build:geo`).
-//
-// Graph: nodes are road junctions; each edge is a stretch of one road between
-// two junctions with its full shape. Edge cost = length in metres, so A* finds
-// the shortest route (main roads and small lanes alike), and one-way streets
-// are only traversed in their legal direction. Travel time is estimated along
-// the chosen route from each road type's typical speed.
 
 const DATA_FILE = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),

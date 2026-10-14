@@ -11,11 +11,7 @@ export class QuoteError extends Error {
   }
 }
 
-/**
- * Validate both points are inside the service area, find the road route with
- * A*, and price the delivery from road distance + weight + parcel type.
- * Throws QuoteError for invalid input / outside the valley.
- */
+
 export const quoteDelivery = ({ pickup, delivery, weightKg, parcelType }) => {
   for (const [label, point] of [["Pickup", pickup], ["Delivery", delivery]]) {
     if (!point || !Number.isFinite(point.lat) || !Number.isFinite(point.lng)) {

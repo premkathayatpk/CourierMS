@@ -6,9 +6,6 @@ import {
 } from "./algorithms/addressResolution.js";
 import { SERVICE_AREA_BBOX, isInServiceArea } from "./serviceArea.js";
 
-// Address search & reverse geocoding restricted to the Kathmandu Valley.
-// Known landmarks are matched locally first; OpenStreetMap Nominatim fills in
-// the rest. Nominatim's policy: max 1 request/second and a real User-Agent.
 
 const NOMINATIM = "https://nominatim.openstreetmap.org";
 const USER_AGENT = "CourierMS/1.0 (courier management system; Kathmandu Valley)";

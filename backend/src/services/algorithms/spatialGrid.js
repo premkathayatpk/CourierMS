@@ -1,17 +1,4 @@
-/**
- * Uniform grid spatial index (supporting data structure).
- *
- * The map is divided into square cells (cellDeg × cellDeg degrees). Each item
- * is stored in every cell its bounding box touches. A nearest-neighbour query
- * scans the query cell, then rings of cells further out, and stops once the
- * ring is farther away than the best match found so far.
- *
- * Build: O(n). Query: ~O(k) where k = items in the few cells inspected,
- * instead of O(n) for a linear scan over ~400k road segments.
- *
- * Used by: snapping a pickup/delivery point to the nearest road (A* router),
- * nearest known place for reverse geocoding.
- */
+
 export class SpatialGrid {
   constructor(cellDeg = 0.005) {
     this.cellDeg = cellDeg; // ~550 m at Kathmandu's latitude
@@ -40,16 +27,10 @@ export class SpatialGrid {
     }
   }
 
-  /**
-   * Find the item with the smallest distance to (lat, lng).
-   *   distanceFn(item) -> metres
-   *   maxRings: how far to search (rings of cells) before giving up
-   * Returns { item, distance } or null.
-   */
+ 
   nearest(lat, lng, distanceFn, maxRings = 6) {
     const [cx, cy] = this.cellOf(lat, lng);
-    // Minimum distance (m) from the query point to any cell in ring r is at
-    // least (r - 1) cells; 1 degree latitude ≈ 111 km.
+   
     const cellMeters = this.cellDeg * 111000 * Math.cos((lat * Math.PI) / 180);
     let best = null;
     const seen = new Set();

@@ -1,16 +1,4 @@
-/**
- * Geofencing — point-in-polygon test (ray casting / even-odd rule).
- *
- * Cast a horizontal ray from the point to the east and count how many polygon
- * edges it crosses: odd = inside, even = outside. Holes are handled by
- * testing them the same way (inside a hole = outside the polygon).
- *
- * A bounding-box check runs first so most far-away points are rejected in O(1).
- * Time: O(v) for v polygon vertices. Coordinates are GeoJSON [lng, lat].
- *
- * Used by: limiting pickup and delivery to Kathmandu, Lalitpur and Bhaktapur
- * districts, and filtering geocoding results to the service area.
- */
+
 
 /** Ray casting against a single ring [[lng, lat], ...]. */
 export const pointInRing = (lng, lat, ring) => {

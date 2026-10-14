@@ -55,8 +55,7 @@ export const aStar = ({
   let expansions = 0;
 
   while (open.size > 0) {
-    // Every remaining path costs at least the smallest f in the queue, so once
-    // that is no better than the best complete path we can stop.
+    
     if (open.peekPriority() >= bestCost) break;
 
     const u = open.pop();
